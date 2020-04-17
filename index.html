@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+</head>
+<style>
+</style>
+
+<body>
+    <div id='app'>
+        <input type='text' placeholder="输入你的内容" id='input'>
+
+        <button id='btn_send'>发送请求</button>
+        <p>状态：<a href='#' id='a'></a></p>
+        <div id='accept'></div>
+    </div>
+</body>
+<script src="../js/vue.js"></script>
+<script>
+    const TYPE_ENTER = 0;
+    const TYPE_LEAVE = 1;
+    const TYPE_MSG = 2;
+    // 演示websocket在浏览器端如何使用
+    // h5提供了websocket的API,可以直接使用
+    // 1.创建websocket
+    let url = "ws://localhost:3000";
+    var socket = new WebSocket(url);
+
+    // 2.监听连接成功事件
+    socket.addEventListener('open', function () {
+        a.innerHTML = '链接服务成功！';
+    });
+
+    // 主动给websocket服务发送消息
+    btn_send.addEventListener('click', function () {
+        var value = input.value;
+        socket.send(value);
+    });
+
+    // 接收websocket数据
+    socket.addEventListener('message', function (e) {
+        let data = JSON.parse(e.data);
+        var div = document.createElement('div');
+        div.innerText = `${data.user}  ${data.time}
+                         ${data.msg} `;
+
+        if (data.type === TYPE_ENTER) {
+            div.style.color = 'green';
+        } else if (data.type === TYPE_LEAVE) {
+            div.style.color = 'red'
+        } else if (data.type === TYPE_MSG) {
+            div.style.color = '#333'
+        } else {
+            div.style.color = 'blue'
+        }
+
+        accept.appendChild(div);
+    })
+</script>
+
+</html>
